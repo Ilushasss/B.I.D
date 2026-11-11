@@ -1,1 +1,1045 @@
-# B.I.D
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>БериИДелай — аренда строительного инструмента в Кургане</title>
+<meta name="description" content="БериИДелай — аренда строительного инструмента в Кургане. Работаем по договору. Доставка или самовывоз.">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scrollbar-gutter: stable; scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #f4f4f5;
+    line-height: 1.6;
+    background: #121214;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+    width: 100%;
+    animation: pageIn .8s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  @keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
+  body.menu-open { overflow: hidden; }
+
+  @keyframes orangeShimmer {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+  }
+
+  .container { max-width: 480px; margin: 0 auto; padding: 0 16px; width: 100%; }
+
+  button, a, .card, .feature, .filter-btn, .rate-toggle button, input, select, textarea {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn, .rent-btn, .filter-btn, .burger, .phone-icon-btn, .side-close, .modal-close, .side-nav a, .rate-toggle button, .footer-grid a {
+    position: relative; overflow: hidden;
+  }
+  .ripple {
+    position: absolute; border-radius: 50%; background: rgba(255,255,255,0.4);
+    transform: scale(0); animation: rippleAnim .6s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none;
+  }
+  @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
+
+  /* ===== СКРЫВАЮЩАЯСЯ ШАПКА ===== */
+  header {
+    background: #000000; 
+    padding: 0; 
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease;
+    animation: slideDown .7s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  header.scrolled { box-shadow: 0 4px 24px rgba(230,126,34,0.25); }
+  header.hide { transform: translateY(-100%); }
+
+  .header-top { 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    padding: 0 5px; 
+  }
+  
+  .burger {
+    background: rgba(230,126,34,0.15); border: 1px solid #e67e22; border-radius: 8px;
+    width: 38px; height: 38px; cursor: pointer; position: relative; flex-shrink: 0;
+    transition: background-color .3s, transform .3s, box-shadow .3s;
+    margin: 4px 0;
+  }
+  .burger:hover { background: rgba(230,126,34,0.3); box-shadow: 0 0 18px rgba(230,126,34,0.3); }
+  .burger:active { transform: scale(0.94); }
+  .burger span, .burger span::before, .burger span::after {
+    content: ''; position: absolute; left: 50%; width: 18px; height: 2px; background: #f39c12;
+    transform: translateX(-50%); transition: all .35s; border-radius: 2px;
+  }
+  .burger span { top: 50%; margin-top: -1px; }
+  .burger span::before { top: -5px; left: 0; transform: none; }
+  .burger span::after { top: 5px; left: 0; transform: none; }
+
+  /* Логотип */
+  .logo {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    text-decoration: none; width: 100%; overflow: hidden;
+    transition: transform .35s;
+  }
+  .logo:hover { transform: scale(1.02); }
+  .logo:active { transform: scale(0.98); }
+  
+  .logo-img { 
+    width: 100%; 
+    height: auto; 
+    display: block;
+    object-fit: contain; 
+    mix-blend-mode: screen; 
+  } 
+
+  .phone-icon-btn {
+    width: 38px; height: 38px; border-radius: 8px; border: 1px solid #e67e22;
+    background: rgba(230,126,34,0.15); color: #f39c12; font-size: 16px; cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; text-decoration: none;
+    transition: background-color .3s, color .3s, transform .3s;
+    margin: 4px 0;
+  }
+  .phone-icon-btn:hover { background: rgba(230,126,34,0.3); transform: rotate(12deg); }
+  .phone-icon-btn:active { background: #e67e22; color: #111; transform: scale(0.94); }
+
+  /* ===== БОКОВОЕ МЕНЮ ===== */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(3px);
+    opacity: 0; visibility: hidden;
+    transition: opacity .4s, visibility .4s;
+    z-index: 300;
+  }
+  .overlay.open { opacity: 1; visibility: visible; }
+
+  .side-menu {
+    position: fixed; top: 0; left: 0; height: 100dvh; width: 300px; max-width: 82vw;
+    background: #121214; border-right: 1px solid #e67e22;
+    z-index: 400; transform: translateX(-100%);
+    transition: transform .45s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex; flex-direction: column; box-shadow: 8px 0 40px rgba(0,0,0,0.6);
+  }
+  .side-menu.open { transform: translateX(0); }
+  
+  /* Логотип в меню без рамок (черный фон, blend mode) */
+  .side-head { 
+    padding: 15px 22px; 
+    border-bottom: 1px solid #2a2a2e; 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    background: #000; 
+  }
+  
+  .side-logo-img { 
+    height: auto; 
+    max-height: 50px; 
+    width: 100%; 
+    object-fit: contain; 
+    mix-blend-mode: screen; 
+    display: block;
+  }
+  
+  .side-close {
+    width: 36px; height: 36px; border-radius: 50%; background: rgba(230,126,34,0.15);
+    border: 1px solid #e67e22; color: #f39c12; font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    transition: all .35s; margin-left: 10px;
+  }
+  .side-close:hover { background: #e67e22; color: #111; transform: rotate(90deg); }
+  
+  .side-nav { flex: 1; padding: 14px 0; overflow-y: auto; }
+  .side-nav a {
+    display: flex; align-items: center; gap: 14px; padding: 15px 24px; color: #d4d4d8; text-decoration: none;
+    font-size: 16px; font-weight: 600; border-left: 3px solid transparent;
+    transition: all .3s;
+  }
+  .side-nav a:hover, .side-nav a:active { background: rgba(230,126,34,0.1); border-left-color: #e67e22; color: #f39c12; padding-left: 30px; }
+  
+  /* ЧЕРНО-БЕЛЫЕ ИКОНКИ В МЕНЮ */
+  .side-nav a .ico { 
+    font-size: 20px; 
+    width: 24px; 
+    text-align: center; 
+    transition: transform .4s;
+    filter: grayscale(100%) brightness(200%); /* Делает эмодзи черно-белыми */
+  }
+  .side-nav a:hover .ico { transform: scale(1.3) rotate(-10deg); }
+  
+  .side-foot { padding: 18px 22px 24px; border-top: 1px solid #2a2a2e; }
+  .side-foot .phone-foot { color: #f39c12; font-weight: 800; font-size: 18px; text-decoration: none; display: block; margin-bottom: 8px; }
+  .side-foot .owner-name { color: #e67e22; font-weight: 600; font-size: 14px; margin-bottom: 10px; font-style: italic; }
+  .side-foot p { font-size: 12px; color: #a1a1aa; margin-bottom: 4px; }
+
+  /* ===== КОМПАКТНЫЙ ГЕРОЙ (ПОД ЭКРАН ТЕЛЕФОНА) ===== */
+  .hero {
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(230,126,34,0.12), transparent 55%),
+      linear-gradient(135deg, #121214 0%, #1c1c1f 100%);
+    padding: 100px 0 40px; /* Отступ под фиксированную шапку */
+    min-height: 100vh; /* Растягиваем на весь экран телефона */
+    position: relative; overflow: hidden;
+  }
+  .hero .container { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: center; height: 100%; }
+  
+  .hero h1 {
+    font-size: 26px; margin-bottom: 14px; line-height: 1.2; color: #fff;
+  }
+  .hero h1 span {
+    background: linear-gradient(90deg, #d35400 0%, #e67e22 25%, #f1c40f 50%, #e67e22 75%, #d35400 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    animation: orangeShimmer 10s linear infinite;
+  }
+  .hero p { font-size: 14px; color: #a1a1aa; margin: 0 auto 20px; max-width: 90%; }
+  .hero-btns { display: flex; flex-direction: column; gap: 10px; }
+
+  .btn {
+    display: inline-block; 
+    background: linear-gradient(90deg, #d35400 0%, #e67e22 25%, #f1c40f 50%, #e67e22 75%, #d35400 100%);
+    background-size: 200% auto; animation: orangeShimmer 10s linear infinite;
+    color: #111; padding: 14px 22px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 15px;
+    border: none; cursor: pointer; font-family: inherit; text-align: center; width: 100%;
+    box-shadow: 0 4px 22px rgba(230,126,34,0.3);
+    transition: transform .3s, box-shadow .3s;
+  }
+  .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 34px rgba(230,126,34,0.5); }
+  .btn:active { transform: translateY(-1px) scale(0.98); }
+  
+  .btn-outline { background: transparent; border: 2px solid #e67e22; color: #f39c12; box-shadow: none; animation: none; }
+  .btn-outline:hover { background: #e67e22; color: #111; }
+  .btn-outline:active { background: #d35400; }
+
+  /* ===== СЕКЦИЯ ПОДДЕРЖКИ ===== */
+  .features { padding: 40px 0; background: #1c1c1f; }
+  .section-title { text-align: center; font-size: 24px; margin-bottom: 8px; color: #fff; }
+  .section-title::after {
+    content: ''; display: block; width: 56px; height: 3px;
+    background: linear-gradient(90deg, #e67e22, #f39c12); margin: 14px auto 0; border-radius: 3px;
+  }
+
+  /* СЛАЙДЕР ТЕКСТА */
+  .slogan-container {
+    height: 50px; position: relative; display: flex; align-items: center; justify-content: center;
+    text-align: center; margin-bottom: 24px; overflow: hidden;
+  }
+  .slogan-text {
+    position: absolute; font-size: 14px; color: #e67e22; font-weight: 600;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.5s, transform 0.5s; width: 100%; padding: 0 10px;
+  }
+  .slogan-text.active { opacity: 1; transform: translateY(0); }
+  .slogan-text.prev { opacity: 0; transform: translateY(-20px); }
+
+  .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .feature {
+    background: linear-gradient(145deg, #27272a, #1c1c1f); padding: 20px 12px; border-radius: 12px;
+    border: 1px solid #3f3f46; text-align: center; transition: border-color .4s, transform .4s;
+  }
+  .feature:hover { border-color: #e67e22; transform: translateY(-4px); }
+  .feature .icon { font-size: 28px; margin-bottom: 8px; display: block; filter: grayscale(100%) brightness(200%); }
+  .feature h3 { font-size: 14px; margin-bottom: 6px; color: #f39c12; }
+  .feature p { font-size: 12px; color: #a1a1aa; }
+
+  /* ===== КАТАЛОГ ===== */
+  .catalog { padding: 40px 0; background: #121214; }
+
+  .rate-toggle {
+    display: flex; justify-content: center; margin: 0 auto 12px; gap: 0;
+    background: #1c1c1f; border: 1px solid #3f3f46; border-radius: 44px; padding: 4px; width: 100%;
+  }
+  .rate-toggle button {
+    flex: 1; padding: 11px 0; border: none; background: transparent; color: #a1a1aa;
+    font-size: 13px; font-weight: 700; border-radius: 40px; cursor: pointer; font-family: inherit;
+    transition: all .4s;
+  }
+  .rate-toggle button:hover:not(.active) { color: #f39c12; }
+  .rate-toggle button.active { 
+    background: linear-gradient(90deg, #d35400 0%, #e67e22 25%, #f1c40f 50%, #e67e22 75%, #d35400 100%);
+    background-size: 200% auto; animation: orangeShimmer 10s linear infinite;
+    color: #111; box-shadow: 0 4px 16px rgba(230,126,34,0.3); font-weight: 800;
+  }
+
+  .discount-note { text-align: center; font-size: 12px; color: #f39c12; margin-bottom: 20px; font-weight: 600; }
+  .discount-note span { background: rgba(230,126,34,0.15); border: 1px solid rgba(230,126,34,0.4); padding: 4px 14px; border-radius: 20px; display: inline-block; }
+
+  .filters { display: flex; flex-wrap: nowrap; gap: 8px; justify-content: flex-start; margin-bottom: 24px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+  .filters::-webkit-scrollbar { display: none; }
+  .filter-btn {
+    padding: 8px 16px; border: 1px solid #3f3f46; background: #1c1c1f; border-radius: 30px;
+    cursor: pointer; font-size: 12px; font-weight: 600; color: #a1a1aa; white-space: nowrap;
+    font-family: inherit; flex-shrink: 0; transition: all .35s;
+  }
+  .filter-btn:hover { border-color: #e67e22; color: #fff; }
+  .filter-btn.active { 
+    background: linear-gradient(90deg, #d35400 0%, #e67e22 25%, #f1c40f 50%, #e67e22 75%, #d35400 100%);
+    background-size: 200% auto; animation: orangeShimmer 10s linear infinite;
+    border-color: #e67e22; color: #111; font-weight: 800;
+  }
+
+  .cards { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .card {
+    background: linear-gradient(145deg, #27272a, #1c1c1f); border-radius: 14px; overflow: hidden;
+    border: 1px solid #3f3f46; display: flex; flex-direction: column; cursor: pointer;
+    transition: transform .4s, border-color .4s;
+  }
+  .card:hover { transform: translateY(-5px); border-color: #e67e22; }
+  
+  .card-img { height: 200px; background: #ffffff; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
+  .card-img img { width: 100%; height: 100%; object-fit: contain; transition: transform .8s; }
+  .card:hover .card-img img { transform: scale(1.08); }
+  
+  .card-discount-badge {
+    position: absolute; top: 12px; right: 12px; 
+    background: linear-gradient(90deg, #d35400 0%, #e67e22 25%, #f1c40f 50%, #e67e22 75%, #d35400 100%);
+    background-size: 200% auto; animation: orangeShimmer 10s linear infinite;
+    color: #111; font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 20px;
+    z-index: 2; opacity: 0; visibility: hidden; transform: scale(0.5);
+    transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+  }
+  .card-discount-badge.visible { opacity: 1; visibility: visible; transform: scale(1); }
+  
+  .card-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+  .card-tag {
+    display: inline-block; font-size: 10px; background: rgba(230,126,34,0.15); color: #f39c12;
+    padding: 3px 10px; border-radius: 20px; margin-bottom: 8px; align-self: flex-start;
+    font-weight: 700; border: 1px solid rgba(230,126,34,0.3);
+  }
+  .card h3 { font-size: 16px; margin-bottom: 6px; color: #fff; }
+  .card .desc { font-size: 13px; color: #a1a1aa; margin-bottom: 14px; flex: 1; }
+  .card-footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #3f3f46; padding-top: 12px; gap: 8px; }
+  .price-box { line-height: 1.2; }
+  
+  .price { 
+    font-size: 20px; font-weight: 800; 
+    background: linear-gradient(90deg, #d35400 0%, #e67e22 25%, #f1c40f 50%, #e67e22 75%, #d35400 100%);
+    background-size: 200% auto; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    animation: orangeShimmer 10s linear infinite;
+  }
+  .price small { font-size: 11px; font-weight: 400; color: #a1a1aa; -webkit-text-fill-color: #a1a1aa; display: block; }
+  .price-old { font-size: 12px; color: #71717a; text-decoration: line-through; display: block; }
+  
+  .rent-btn {
+    background: transparent; color: #f39c12; border: 1px solid #e67e22; padding: 10px 16px; border-radius: 8px;
+    cursor: pointer; font-size: 12px; font-weight: 700; white-space: nowrap; font-family: inherit;
+    transition: all .35s;
+  }
+  .rent-btn:hover { background: #e67e22; color: #111; }
+
+  /* ===== МОДАЛЬНОЕ ОКНО ===== */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 500;
+    display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; visibility: hidden; transition: opacity .4s, visibility .4s;
+  }
+  .modal-overlay.open { opacity: 1; visibility: visible; }
+  .modal {
+    background: #1c1c1f; border: 1px solid #e67e22; border-radius: 22px 22px 0 0; width: 100%; max-width: 480px;
+    max-height: 92vh; overflow-y: auto; position: relative; transform: translateY(100%);
+    transition: transform .5s; box-shadow: 0 -12px 60px rgba(230,126,34,0.15);
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-close {
+    position: absolute; top: 18px; right: 14px; width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(230,126,34,0.25); border: 1px solid #e67e22; color: #f39c12; font-size: 18px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 3;
+    transition: all .4s;
+  }
+  .modal-close:hover { background: #e67e22; color: #111; transform: rotate(90deg); }
+  
+  .modal-img { width: 100%; height: 220px; object-fit: contain; background: #ffffff; border-radius: 22px 22px 0 0; }
+  
+  .modal-body { padding: 20px; }
+  .modal-tag { display: inline-block; font-size: 11px; background: rgba(230,126,34,0.15); color: #f39c12; padding: 4px 12px; border-radius: 20px; margin-bottom: 10px; font-weight: 700; border: 1px solid rgba(230,126,34,0.3); }
+  .modal-body h2 { font-size: 20px; color: #fff; margin-bottom: 12px; }
+  .modal-desc { font-size: 14px; color: #d4d4d8; margin-bottom: 20px; line-height: 1.7; }
+
+  .modal-section { margin-bottom: 20px; }
+  .modal-section h4 { font-size: 12px; color: #f39c12; margin-bottom: 10px; text-transform: uppercase; font-weight: 800; padding-bottom: 6px; border-bottom: 1px solid #3f3f46; }
+  .modal-section ul { list-style: none; }
+  .modal-section ul li { font-size: 13px; color: #a1a1aa; padding: 6px 0 6px 22px; position: relative; line-height: 1.5; }
+  .modal-section ul li::before { content: '✓'; position: absolute; left: 0; color: #e67e22; font-weight: 800; }
+
+  .modal-specs { background: #f4f4f5; border-radius: 10px; padding: 4px 14px; margin-bottom: 20px; }
+  .modal-specs h4 { color: #000; border-bottom: 1px solid #d4d4d8; padding-top: 10px; margin-bottom: 8px; }
+  .modal-specs table { width: 100%; border-collapse: collapse; }
+  .modal-specs td { padding: 9px 0; font-size: 13px; border-bottom: 1px solid #e4e4e7; color: #000; }
+  .modal-specs td:first-child { color: #000; width: 48%; font-weight: 600; }
+  .modal-specs td:last-child { text-align: right; color: #000; font-weight: 700; }
+
+  .modal-price-row {
+    display: flex; flex-direction: column; align-items: stretch; background: #121214;
+    border: 1px solid #3f3f46; border-radius: 12px; padding: 16px; margin-bottom: 12px; gap: 14px;
+  }
+  .modal-price { 
+    font-size: 24px; font-weight: 800; 
+    background: linear-gradient(90deg, #d35400 0%, #e67e22 25%, #f1c40f 50%, #e67e22 75%, #d35400 100%);
+    background-size: 200% auto; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    animation: orangeShimmer 10s linear infinite;
+  }
+  .modal-price small { font-size: 12px; font-weight: 400; color: #a1a1aa; -webkit-text-fill-color: #a1a1aa; display: block; }
+
+  /* ===== КАЛЬКУЛЯТОР АРЕНДЫ (В МОДАЛКЕ) ===== */
+  .calc-row { margin-bottom: 14px; }
+  .calc-row label { display: block; font-size: 13px; color: #d4d4d8; margin-bottom: 6px; font-weight: 600; }
+  .calc-select {
+    width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid #3f3f46; background: #121214; color: #fff;
+    font-size: 15px; font-family: inherit; outline: none; appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23f39c12%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto;
+  }
+  .calc-total {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #27272a; padding: 12px 16px; border-radius: 8px; margin-top: 10px; border: 1px dashed #e67e22;
+  }
+  .calc-total span:first-child { font-size: 14px; color: #a1a1aa; }
+  .calc-total span:last-child { font-size: 20px; font-weight: 800; color: #f39c12; }
+
+  /* ===== ФОРМА ===== */
+  .order { background: linear-gradient(180deg, #1c1c1f, #121214); padding: 40px 0; border-top: 1px solid #3f3f46; }
+  .form-row { margin-bottom: 14px; }
+  .form-row label { display: block; font-size: 13px; margin-bottom: 6px; color: #d4d4d8; font-weight: 600; }
+  .form-row input, .form-row select, .form-row textarea {
+    width: 100%; padding: 14px 15px; border-radius: 10px; border: 1px solid #3f3f46; background: #1c1c1f; color: #fff;
+    font-size: 16px; font-family: inherit; outline: none; transition: border-color .35s;
+  }
+  .form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: #e67e22; }
+  .form-row textarea { resize: vertical; min-height: 80px; }
+  .order .btn { margin-top: 8px; }
+
+  /* ===== ПОДВАЛ ===== */
+  footer { background: #121214; color: #a1a1aa; padding: 40px 0 20px; font-size: 14px; border-top: 1px solid #27272a; }
+  .footer-grid { display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 24px; }
+  .footer-grid h4 { color: #f39c12; margin-bottom: 10px; font-size: 15px; }
+  .footer-grid p, .footer-grid a { color: #a1a1aa; text-decoration: none; display: block; margin-bottom: 6px; font-size: 13px; }
+  .footer-grid a:hover { color: #f39c12; }
+  .footer-grid .phone-foot { color: #f39c12; font-weight: 700; font-size: 16px; }
+  .copy { text-align: center; border-top: 1px solid #27272a; padding-top: 18px; font-size: 12px; color: #52525b; }
+
+  /* ===== УВЕДОМЛЕНИЕ ===== */
+  .toast {
+    position: fixed; bottom: 16px; right: 16px; left: 16px; max-width: 448px; margin-left: auto;
+    background: linear-gradient(135deg, #d35400, #e67e22); color: #fff; padding: 15px 20px; border-radius: 12px;
+    box-shadow: 0 10px 34px rgba(230,126,34,0.4); transform: translateY(180%) scale(0.95); opacity: 0;
+    transition: transform .5s, opacity .4s; z-index: 600; font-weight: 700; font-size: 14px;
+  }
+  .toast.show { transform: translateY(0) scale(1); opacity: 1; }
+
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s, transform .8s; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header id="header">
+  <div class="container">
+    <div class="header-top">
+      <button class="burger" id="burger" aria-label="Открыть меню"><span></span></button>
+      
+      <a href="#" class="logo">
+        <img src="logo.png" alt="Бери и Делай" class="logo-img">
+      </a>
+      
+      <a href="tel:+79956749750" class="phone-icon-btn" aria-label="Позвонить">📞</a>
+    </div>
+  </div>
+</header>
+
+<div class="overlay" id="overlay"></div>
+<aside class="side-menu" id="sideMenu">
+  <div class="side-head">
+    <img src="logo.png" alt="Бери и Делай" class="side-logo-img">
+    <button class="side-close" id="sideClose" aria-label="Закрыть">✕</button>
+  </div>
+  <nav class="side-nav">
+    <a href="#support" class="smooth-link"><span class="ico">🛟</span> Поддержка</a>
+    <a href="#catalog" class="smooth-link"><span class="ico">🛠️</span> Каталог</a>
+    <a href="#order" class="smooth-link"><span class="ico">📝</span> Оставить заявку</a>
+    <a href="tel:+79956749750"><span class="ico">📞</span> Позвонить</a>
+  </nav>
+  <div class="side-foot">
+    <a href="tel:+79956749750" class="phone-foot">+7 (995) 674-97-50</a>
+    <p class="owner-name">Илья Константинович</p>
+    <p>Ежедневно 8:00 – 20:00</p>
+    <p>г. Курган, 8-я чистополевая д. 7</p>
+  </div>
+</aside>
+
+<section class="hero">
+  <div class="container">
+    <h1>Аренда инструмента <span>в Кургане</span></h1>
+    <p>Работаем по договору. Доставка по городу или самовывоз. Скидка 15% на аренду от недели.</p>
+    <div class="hero-btns">
+      <a href="#catalog" class="btn smooth-link">Смотреть каталог</a>
+      <a href="#order" class="btn btn-outline smooth-link">Оставить заявку</a>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="support">
+  <div class="container">
+    <h2 class="section-title reveal">Поддержка</h2>
+    
+    <!-- Слайдер слоганов (БиД исправлено) -->
+    <div class="slogan-container reveal">
+      <div class="slogan-text active">БиД: ставка на удобство — всё для стройки в одном месте!</div>
+      <div class="slogan-text">БиД: быстро, надёжно, удобно!</div>
+      <div class="slogan-text">БиД: инструмент на срок — результат навсегда!</div>
+      <div class="slogan-text">БиД: бери и делай</div>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature reveal"><span class="icon">⏱️</span><h3>По часам и суткам</h3><p>Аренда от 1 часа до месяца.</p></div>
+      <div class="feature reveal"><span class="icon">📄</span><h3>Работаем по договору</h3><p>Официальное оформление.</p></div>
+      <div class="feature reveal"><span class="icon">🚚</span><h3>Доставка / Самовывоз</h3><p>Условия обсуждаются.</p></div>
+      <div class="feature reveal"><span class="icon">📞</span><h3>24/7</h3><p>Всегда на связи.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="catalog" id="catalog">
+  <div class="container">
+    <h2 class="section-title reveal">Каталог</h2>
+    <p class="section-sub reveal" style="text-align:center; color:#a1a1aa; font-size:13px; margin-bottom:32px;">Выберите категорию и нажмите на карточку</p>
+
+    <div class="rate-toggle reveal">
+      <button class="active" data-rate="hour">За час</button>
+      <button data-rate="day">За сутки</button>
+    </div>
+    <p class="discount-note reveal"><span>🎁 −15% от недели</span></p>
+
+    <div class="filters reveal">
+      <button class="filter-btn active" data-filter="electric">Электро</button>
+      <button class="filter-btn" data-filter="power">Силовая</button>
+      <button class="filter-btn" data-filter="concrete">Бетон</button>
+      <button class="filter-btn" data-filter="heat">Обогрев</button>
+      <button class="filter-btn" data-filter="measure">Измерение</button>
+    </div>
+
+    <div class="cards" id="cards">
+
+      <!-- 1. Лазерный уровень -->
+      <div class="card" data-category="measure" data-tool="Лазерный уровень DeWalt 4D 16 лучей" data-hour="200" data-day="1399" data-img="img-lazer.jpg" data-tag="Измерение" data-desc="Профессиональный лазерный уровень DeWalt 4D с 16 лучами — четыре плоскости по 360°. Идеален для разметки стен, полов, потолков, монтажа гипсокартона, укладки плитки и установки стеллажей." data-specs='{"Количество лучей":"16 (4 плоскости × 360°)","Дальность":"30 м","Точность":"±2 мм/10 м","Класс лазера":"2","Длина волны":"635 нм (красный)","Питание":"Li-Ion аккумулятор","Время работы":"до 8 часов","Защита":"IP54","Вес":"1,5 кг"}' data-kit='["Лазерный уровень DeWalt 4D","Аккумулятор Li-Ion","Зарядное устройство","Магнитная мишень","Очки для работы с лазером","Кейс для переноски"]' data-terms='["Залог обсуждается индивидуально","Аренда по договору","Доставка по договоренности или самовывоз","Скидка 15% при аренде от недели","Не направлять лазерный луч в глаза","Проверка калибровки при выдаче"]'>
+        <div class="card-img"><span class="card-discount-badge">−10%</span><img src="img-lazer.jpg" alt="Лазерный уровень" loading="lazy"></div>
+        <div class="card-body">
+          <span class="card-tag">Измерение</span>
+          <h3>Лазерный уровень DeWalt 4D</h3>
+          <p class="desc">4 плоскости 360°, 16 лучей, дальность 30 м, точность ±2 мм.</p>
+          <div class="card-footer">
+            <div class="price-box"><div class="price" data-hour="200" data-day="1259">200 ₽<small>/ час</small></div></div>
+            <button class="rent-btn" data-tool="Лазерный уровень DeWalt 4D 16 лучей">Арендовать</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Перфоратор аккумуляторный DeWalt -->
+      <div class="card" data-category="electric" data-tool="Перфоратор аккумуляторный DeWalt 125 мм" data-hour="300" data-day="2199" data-img="img-perf-dewalt.jpg" data-tag="Электроинструмент" data-desc="Мощный аккумуляторный перфоратор DeWalt FlexVolt 54V с энергией удара 25 Дж. Сверление отверстий до 125 мм в бетоне, кирпиче и камне. Работает без проводов — идеален для объектов без электричества." data-specs='{"Мощность":"2500 Вт (эквивалент)","Макс. диаметр сверления":"125 мм","Тип патрона":"SDS-Max","Энергия удара":"25 Дж","Напряжение":"54 В (FlexVolt)","Аккумулятор":"2×9.0 Ач Li-Ion","Вес":"8,2 кг"}' data-kit='["Перфоратор DeWalt FlexVolt","2 аккумулятора 54V 9.0 Ач","Зарядное устройство","Буры SDS-Max (3 шт)","Боковая рукоять","Ограничитель глубины","Кейс для переноски"]' data-terms='["Залог обсуждается индивидуально","Аренда по договору","Доставка по договоренности или самовывоз","Скидка 15% при аренде от недели","Аккумуляторы заряжены на момент выдачи","Замена буров — по факту износа"]'>
+        <div class="card-img"><span class="card-discount-badge">−10%</span><img src="img-perf-dewalt.jpg" alt="Перфоратор DeWalt" loading="lazy"></div>
+        <div class="card-body">
+          <span class="card-tag">Электроинструмент</span>
+          <h3>Перфоратор аккумуляторный DeWalt</h3>
+          <p class="desc">SDS-Max, 2500 Вт, 25 Дж. Сверление до 125 мм. Без проводов.</p>
+          <div class="card-footer">
+            <div class="price-box"><div class="price" data-hour="300" data-day="1979">300 ₽<small>/ час</small></div></div>
+            <button class="rent-btn" data-tool="Перфоратор аккумуляторный DeWalt 125 мм">Арендовать</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Отбойный молоток ВИХРЬ -->
+      <div class="card" data-category="power" data-tool="Отбойный молоток ВИХРЬ 1600 Вт 25 Дж" data-hour="350" data-day="2399" data-img="img-otboyniy.jpg" data-tag="Силовая техника" data-desc="Электрический отбойный молоток ВИХРЬ для демонтажа бетонных конструкций, кирпичной кладки, снятия плитки и асфальта. Энергия удара 25 Дж, высокая частота ударов, виброзащита." data-specs='{"Мощность":"1600 Вт","Энергия удара":"25 Дж","Патрон":"SDS-Max","Частота ударов":"1400–2900 уд/мин","Напряжение":"220 В","Виброзащита":"Есть","Вес":"11 кг"}' data-kit='["Отбойный молоток ВИХРЬ","Пика SDS-Max","Зубило SDS-Max","Лопатка SDS-Max","Боковая рукоять","Защитные очки","Перчатки","Кейс"]' data-terms='["Залог обсуждается индивидуально","Аренда по договору","Доставка по договоренности или самовывоз","Скидка 15% при аренде от недели","Работа только в защитных очках","Вес 11 кг — работайте вдвоём при переноске"]'>
+        <div class="card-img"><span class="card-discount-badge">−10%</span><img src="img-otboyniy.jpg" alt="Отбойный молоток ВИХРЬ" loading="lazy"></div>
+        <div class="card-body">
+          <span class="card-tag">Силовая техника</span>
+          <h3>Отбойный молоток ВИХРЬ 1600 Вт</h3>
+          <p class="desc">Мощность 1600 Вт, 25 Дж. Для демонтажа бетона и кирпича.</p>
+          <div class="card-footer">
+            <div class="price-box"><div class="price" data-hour="350" data-day="2159">350 ₽<small>/ час</small></div></div>
+            <button class="rent-btn" data-tool="Отбойный молоток ВИХРЬ 1600 Вт 25 Дж">Арендовать</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Пылесос строительный Rekidel -->
+      <div class="card" data-category="electric" data-tool="Пылесос строительный Rekidel 30 л" data-hour="250" data-day="1699" data-img="img-pylesos.jpg" data-tag="Электроинструмент" data-desc="Профессиональный строительный пылесос Rekidel с баком 30 литров и мощностью 3300 Вт. Собирает бетонную пыль, стружку, мусор. Работает с электроинструментом через розетку-синхронизатор." data-specs='{"Мощность":"3300 Вт","Объём бака":"30 л","Разрежение":"250 мбар","Расход воздуха":"4000 л/мин","Розетка для инструмента":"Есть (синхронизатор)","Фильтр":"HEPA-13","Вес":"9 кг"}' data-kit='["Пылесос Rekidel 30 л","Шланг 3 м","Металлическая труба","Щелевая насадка","Щётка для пола","HEPA-фильтр","Мешок для пыли","Инструкция"]' data-terms='["Залог обсуждается индивидуально","Аренда по договору","Доставка по договоренности или самовывоз","Скидка 15% при аренде от недели","Мешок для пыли — бесплатно","Промывка бака после работы — обязательно"]'>
+        <div class="card-img"><span class="card-discount-badge">−10%</span><img src="img-pylesos.jpg" alt="Пылесос Rekidel" loading="lazy"></div>
+        <div class="card-body">
+          <span class="card-tag">Электроинструмент</span>
+          <h3>Пылесос строительный Rekidel</h3>
+          <p class="desc">Бак 30 л, 3300 Вт, HEPA-13, розетка для инструмента.</p>
+          <div class="card-footer">
+            <div class="price-box"><div class="price" data-hour="250" data-day="1529">250 ₽<small>/ час</small></div></div>
+            <button class="rent-btn" data-tool="Пылесос строительный Rekidel 30 л">Арендовать</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Лобзик Bosch -->
+      <div class="card" data-category="electric" data-tool="Электрический лобзик Bosch" data-hour="180" data-day="1299" data-img="img-lobzik.jpg" data-tag="Электроинструмент" data-desc="Электрический лобзик Bosch с 6 режимами скорости для фигурного и прямого реза дерева, металла, пластика. Быстрая замена пилки без ключа, плавный пуск, подсветка рабочей зоны." data-specs='{"Мощность":"3500 Вт","Обороты":"28000 об/мин","Режимы скорости":"6","Ход пилки":"26 мм","Глубина пропила дерево":"135 мм","Глубина пропила металл":"10 мм","Напряжение":"220 В","Вес":"3,5 кг"}' data-kit='["Лобзик Bosch","Пилки для дерева (3 шт)","Пилки для металла (3 шт)","Защитная накладка","Патрубок для пылесоса","Ключ","Кейс для переноски"]' data-terms='["Залог обсуждается индивидуально","Аренда по договору","Доставка по договоренности или самовывоз","Скидка 15% при аренде от недели","Пилки в комплекте — 6 шт","Замена пилок — бесплатно при поломке"]'>
+        <div class="card-img"><span class="card-discount-badge">−10%</span><img src="img-lobzik.jpg" alt="Лобзик Bosch" loading="lazy"></div>
+        <div class="card-body">
+          <span class="card-tag">Электроинструмент</span>
+          <h3>Электрический лобзик Bosch</h3>
+          <p class="desc">3500 Вт, 6 режимов, ход 26 мм. Для дерева, металла, пластика.</p>
+          <div class="card-footer">
+            <div class="price-box"><div class="price" data-hour="180" data-day="1169">180 ₽<small>/ час</small></div></div>
+            <button class="rent-btn" data-tool="Электрический лобзик Bosch">Арендовать</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Штроборез HUTER -->
+      <div class="card" data-category="electric" data-tool="Электрический штроборез HUTER" data-hour="280" data-day="1899" data-img="img-shtroborez.jpg" data-tag="Электроинструмент" data-desc="Электрический штроборез HUTER для быстрой и аккуратной резки штроб в бетоне, кирпиче и газобетоне под электропроводку и трубы. Два алмазных диска, глубина до 32 мм, регулировка ширины штробы." data-specs='{"Мощность":"2000 Вт","Обороты":"8500 об/мин","Диски":"2×125 мм","Глубина штробы":"до 32 мм","Ширина штробы":"до 40 мм","Напряжение":"220 В","Вес":"5,2 кг"}' data-kit='["Штроборез HUTER","2 алмазных диска 125 мм","Защитный кожух","Боковая рукоять","Патрубок для пылесоса","Ключ","Инструкция"]' data-terms='["Залог обсуждается индивидуально","Аренда по договору","Доставка по договоренности или самовывоз","Скидка 15% при аренде от недели","Работа только с защитным кожухом","Рекомендуется использовать пылесос"]'>
+        <div class="card-img"><span class="card-discount-badge">−10%</span><img src="img-shtroborez.jpg" alt="Штроборез HUTER" loading="lazy"></div>
+        <div class="card-body">
+          <span class="card-tag">Электроинструмент</span>
+          <h3>Электрический штроборез HUTER</h3>
+          <p class="desc">2000 Вт, 8500 об/мин, штробы до 40 мм. Два алмазных диска.</p>
+          <div class="card-footer">
+            <div class="price-box"><div class="price" data-hour="280" data-day="1709">280 ₽<small>/ час</small></div></div>
+            <button class="rent-btn" data-tool="Электрический штроборез HUTER">Арендовать</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Бетономешалка 120 л -->
+      <div class="card" data-category="concrete" data-tool="Бетономешалка 120 л" data-hour="250" data-day="1599" data-img="img-beton.jpg" data-tag="Бетонные работы" data-desc="Бетономешалка гравитационного типа для приготовления бетона, раствора, штукатурки. Барабан 120 л, чугунный венец, электрический двигатель 650 Вт. Идеальна для фундаментов, стяжек, кладки." data-specs='{"Объём барабана":"120 л","Объём готовой смеси":"90 л","Мощность":"650 Вт","Напряжение":"220 В","Скорость вращения":"28 об/мин","Венец":"Чугунный","Вес":"48 кг"}' data-kit='["Бетономешалка 120 л","Комплект колёс","Лопасть для замеса","Инструкция по эксплуатации","Паспорт изделия","Комплект ключей"]' data-terms='["Залог обсуждается индивидуально","Аренда по договору","Доставка по договоренности или самовывоз","Скидка 15% при аренде от недели","Работа только на ровной поверхности","Промывка барабана после работы — обязательно"]'>
+        <div class="card-img"><span class="card-discount-badge">−10%</span><img src="img-beton.jpg" alt="Бетономешалка" loading="lazy"></div>
+        <div class="card-body">
+          <span class="card-tag">Бетонные работы</span>
+          <h3>Бетономешалка 120 л</h3>
+          <p class="desc">Гравитационная, 120 л, 650 Вт. Для бетона, раствора, штукатурки.</p>
+          <div class="card-footer">
+            <div class="price-box"><div class="price" data-hour="250" data-day="1439">250 ₽<small>/ час</small></div></div>
+            <button class="rent-btn" data-tool="Бетономешалка 120 л">Арендовать</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. Дрель-шуруповерт DeWalt -->
+      <div class="card" data-category="electric" data-tool="Дрель-шуруповерт аккумуляторный DeWalt" data-hour="120" data-day="899" data-img="img-shurupovert.jpg" data-tag="Электроинструмент" data-desc="Аккумуляторная дрель-шуруповерт DeWalt 18V для сборки мебели, монтажа гипсокартона, работы с деревом и металлом. 2 аккумулятора в комплекте, быстрая зарядка, 2 скорости." data-specs='{"Напряжение":"18 В","Крутящий момент":"65 Н·м","Патрон":"1,5–13 мм","Скорость":"0–450 / 0–1800 об/мин","Аккумулятор":"2×2.0 Ач Li-Ion","Тип":"Литий-ионный","Вес":"1,6 кг"}' data-kit='["Дрель-шуруповерт DeWalt","2 аккумулятора 18V 2.0 Ач","Зарядное устройство","Битодержатель","Набор бит (10 шт)","Кейс для переноски"]' data-terms='["Залог обсуждается индивидуально","Аренда по договору","Доставка по договоренности или самовывоз","Скидка 15% при аренде от недели","Аккумуляторы заряжены на момент выдачи","При полном разряде — замена бесплатно"]'>
+        <div class="card-img"><span class="card-discount-badge">−10%</span><img src="img-shurupovert.jpg" alt="Дрель-шуруповерт DeWalt" loading="lazy"></div>
+        <div class="card-body">
+          <span class="card-tag">Электроинструмент</span>
+          <h3>Дрель-шуруповерт DeWalt</h3>
+          <p class="desc">18 В, 65 Н·м, 2 АКБ. Для сборки и монтажа.</p>
+          <div class="card-footer">
+            <div class="price-box"><div class="price" data-hour="120" data-day="809">120 ₽<small>/ час</small></div></div>
+            <button class="rent-btn" data-tool="Дрель-шуруповерт аккумуляторный DeWalt">Арендовать</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9. Болгарка 125 DeWalt -->
+      <div class="card" data-category="electric" data-tool="Болгарка 125 DeWalt" data-hour="130" data-day="899" data-img="img-bolgarka.jpg" data-tag="Электроинструмент" data-desc="Углошлифовальная машина DeWalt 125 мм для резки и шлифовки металла, камня, бетона. Защита от случайного пуска, плавный пуск, быстрая замена диска." data-specs='{"Мощность":"1400 Вт","Диск":"125 мм","Посадочный диаметр":"22,2 мм","Обороты":"2800–10000 об/мин","Резьба шпинделя":"M14","Защита от пуска":"Есть","Напряжение":"220 В","Вес":"2,6 кг"}' data-kit='["Болгарка DeWalt 125 мм","Отрезной диск по металлу","Защитный кожух","Боковая рукоять","Ключ для смены диска","Инструкция","Кейс"]' data-terms='["Залог обсуждается индивидуально","Аренда по договору","Доставка по договоренности или самовывоз","Скидка 15% при аренде от недели","Работа только с защитным кожухом","Не использовать диски больше 125 мм"]'>
+        <div class="card-img"><span class="card-discount-badge">−10%</span><img src="img-bolgarka.jpg" alt="Болгарка DeWalt" loading="lazy"></div>
+        <div class="card-body">
+          <span class="card-tag">Электроинструмент</span>
+          <h3>Болгарка 125 DeWalt</h3>
+          <p class="desc">1400 Вт, диск 125 мм. Резка металла и камня.</p>
+          <div class="card-footer">
+            <div class="price-box"><div class="price" data-hour="130" data-day="809">130 ₽<small>/ час</small></div></div>
+            <button class="rent-btn" data-tool="Болгарка 125 DeWalt">Арендовать</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10. Перфоратор электрический Bosch -->
+      <div class="card" data-category="electric" data-tool="Перфоратор электрический Bosch" data-hour="220" data-day="1499" data-img="img-perf-bosch.jpg" data-tag="Электроинструмент" data-desc="Электрический перфоратор Bosch SDS-Plus для сверления бетона, кирпича, камня и режима долбления. В комплекте буры и зубило. Отлично подходит для монтажа анкеров, дюбелей, штробления." data-specs='{"Мощность":"800 Вт","Энергия удара":"3,0 Дж","Патрон":"SDS-Plus","Макс. диаметр бетон":"26 мм","Частота ударов":"4000 уд/мин","Напряжение":"220 В","Вес":"2,7 кг"}' data-kit='["Перфоратор Bosch SDS-Plus","Буры SDS-Plus 8×150 и 10×150 мм","Зубило SDS-Plus","Боковая рукоять","Ограничитель глубины","Кейс для переноски"]' data-terms='["Залог обсуждается индивидуально","Аренда по договору","Доставка по договоренности или самовывоз","Скидка 15% при аренде от недели","Испытательный срок при получении","Замена буров — по факту износа"]'>
+        <div class="card-img"><span class="card-discount-badge">−10%</span><img src="img-perf-bosch.jpg" alt="Перфоратор Bosch" loading="lazy"></div>
+        <div class="card-body">
+          <span class="card-tag">Электроинструмент</span>
+          <h3>Перфоратор электрический Bosch</h3>
+          <p class="desc">800 Вт, SDS-Plus, 3,0 Дж. Для бетона, кирпича, камня.</p>
+          <div class="card-footer">
+            <div class="price-box"><div class="price" data-hour="220" data-day="1349">220 ₽<small>/ час</small></div></div>
+            <button class="rent-btn" data-tool="Перфоратор электрический Bosch">Арендовать</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 11. Тепловая пушка Ресанта -->
+      <div class="card" data-category="heat" data-tool="Тепловая пушка Ресанта" data-hour="150" data-day="999" data-img="img-pushka.jpg" data-tag="Обогрев" data-desc="Электрическая тепловая пушка Ресанта для обогрева стройплощадок, гаражей, складов, дач. Быстрый нагрев, три режима мощности, термостат, защита от перегрева. Работает от сети 220 В." data-specs='{"Мощность":"3 кВт","Режимы":"1,5 / 2 / 3 кВт","Напряжение":"220 В","Площадь обогрева":"до 35 м²","Расход воздуха":"250 м³/ч","Термостат":"Есть","Защита":"От перегрева","Вес":"2,8 кг"}' data-kit='["Тепловая пушка Ресанта","Термостат","Рукоять для переноски","Инструкция по эксплуатации","Паспорт изделия","Гарантийный талон"]' data-terms='["Залог обсуждается индивидуально","Аренда по договору","Доставка по договоренности или самовывоз","Скидка 15% при аренде от недели","Только для сухих помещений","Не накрывать во время работы"]'>
+        <div class="card-img"><span class="card-discount-badge">−10%</span><img src="img-pushka.jpg" alt="Тепловая пушка Ресанта" loading="lazy"></div>
+        <div class="card-body">
+          <span class="card-tag">Обогрев</span>
+          <h3>Тепловая пушка Ресанта</h3>
+          <p class="desc">3 кВт, 3 режима, термостат. Обогрев до 35 м².</p>
+          <div class="card-footer">
+            <div class="price-box"><div class="price" data-hour="150" data-day="899">150 ₽<small>/ час</small></div></div>
+            <button class="rent-btn" data-tool="Тепловая пушка Ресанта">Арендовать</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- МОДАЛЬНОЕ ОКНО С КАЛЬКУЛЯТОРОМ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" id="modalClose">✕</button>
+    <img class="modal-img" id="modalImg" src="" alt="">
+    <div class="modal-body">
+      <span class="modal-tag" id="modalTag"></span>
+      <h2 id="modalTitle"></h2>
+      <p class="modal-desc" id="modalDesc"></p>
+      <div class="modal-section"><h4>Комплектация</h4><ul id="modalKit"></ul></div>
+      <div class="modal-section"><h4>Условия аренды</h4><ul id="modalTerms"></ul></div>
+      <div class="modal-section modal-specs">
+        <h4>Характеристики</h4>
+        <table id="modalSpecs"></table>
+      </div>
+      
+      <!-- БЛОК КАЛЬКУЛЯТОРА -->
+      <div class="calc-row">
+        <label>Срок аренды:</label>
+        <select class="calc-select" id="calcTerm">
+          <option value="hour">1 час</option>
+          <option value="day">1 сутки</option>
+          <option value="week">1 неделя (−15%)</option>
+          <option value="month">1 месяц (−15%)</option>
+        </select>
+      </div>
+
+      <div class="modal-price-row">
+        <div>
+          <div class="modal-price" id="modalPrice">—</div>
+          <small id="modalPriceUnit" style="color:#a1a1aa; font-size:12px; -webkit-text-fill-color: #a1a1aa;"></small>
+          <span class="modal-price-old" id="modalPriceOld" style="display:none;"></span>
+        </div>
+      </div>
+      
+      <div class="calc-total">
+        <span>Итого к оплате:</span>
+        <span id="calcTotal">0 ₽</span>
+      </div>
+      
+      <button class="btn" id="modalRentBtn" style="margin-top: 20px;">Арендовать</button>
+    </div>
+  </div>
+</div>
+
+<section class="order" id="order">
+  <div class="container">
+    <h2 class="section-title reveal">Заявка</h2>
+    <p class="section-sub reveal" style="text-align:center; color:#a1a1aa; font-size:13px; margin-bottom:32px;">Перезвоним в течение 15 минут</p>
+    
+    <!-- Форма (добавлен action для отправки на Formspree) -->
+    <form id="orderForm" action="https://formspree.io/f/ВАШ_ID" method="POST" class="reveal">
+      <div class="form-row"><label for="name">Имя *</label><input type="text" id="name" name="name" required placeholder="Иван"></div>
+      <div class="form-row"><label for="phone">Телефон *</label><input type="tel" id="phone" name="phone" required placeholder="+7 (___) ___-__-__"></div>
+      <div class="form-row"><label for="tool">Инструмент</label><input type="text" id="tool" name="tool" placeholder="Например: Перфоратор Bosch"></div>
+      <div class="form-row"><label for="period">Срок аренды</label><select id="period" name="period"><option>1 час</option><option>2–4 часа</option><option>1 сутки</option><option>1 неделя (−15%)</option><option>1 месяц (−15%)</option></select></div>
+      <div class="form-row"><label for="comment">Комментарий</label><textarea id="comment" name="comment" placeholder="Адрес доставки или самовывоз..."></textarea></div>
+      <button type="submit" class="btn">Отправить заявку</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div><h4>БериИДелай</h4><p>Аренда инструмента в Кургане и области по договору. Скидка 15% от недели.</p></div>
+      <div>
+        <h4>Контакты</h4>
+        <a href="tel:+79956749750" class="phone-foot">📞 +7 (995) 674-97-50</a>
+        <a href="mailto:berii.delay@mail.ru">✉️ berii.delay@mail.ru</a>
+        <p>📍 г. Курган, 8-я чистополевая д. 7</p>
+        <p>🚚 Доставка / 🏢 Самовывоз</p>
+      </div>
+      <div><h4>Режим работы</h4><p>Пн–Пт: 8:00 – 20:00</p><p>Сб–Вс: 9:00 – 18:00</p></div>
+    </div>
+    <div class="copy">© 2026 БериИДелай. Все права защищены.</div>
+  </div>
+</footer>
+
+<div class="toast" id="toast">Заявка отправлена! Мы вам перезвоним.</div>
+
+<script>
+  function smoothScrollTo(targetY, duration = 800) {
+    const startY = window.pageYOffset;
+    const distance = targetY - startY;
+    let startTime = null;
+    function easeInOutCubic(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+    function animation(currentTime) {
+      if (startTime === null) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const progress = Math.min(timeElapsed / duration, 1);
+      window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+      if (progress < 1) requestAnimationFrame(animation);
+    }
+    requestAnimationFrame(animation);
+  }
+  document.querySelectorAll('.smooth-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const href = link.getAttribute('href');
+      if (href.startsWith('#')) {
+        e.preventDefault();
+        const target = document.querySelector(href);
+        if (target) {
+          const offset = 60;
+          const targetY = target.getBoundingClientRect().top + window.pageYOffset - offset;
+          smoothScrollTo(targetY, 900);
+        }
+        closeMenu();
+      }
+    });
+  });
+
+  function addRipple(e) {
+    const btn = e.currentTarget;
+    const rect = btn.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = (e.clientX || rect.left + rect.width / 2) - rect.left - size / 2;
+    const y = (e.clientY || rect.top + rect.height / 2) - rect.top - size / 2;
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+    btn.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 650);
+  }
+  document.querySelectorAll('.btn, .rent-btn, .filter-btn, .burger, .phone-icon-btn, .side-close, .modal-close, .rate-toggle button').forEach(btn => {
+    btn.addEventListener('click', addRipple);
+  });
+
+  const burger = document.getElementById('burger');
+  const sideMenu = document.getElementById('sideMenu');
+  const overlay = document.getElementById('overlay');
+  const sideClose = document.getElementById('sideClose');
+
+  function openMenu() { sideMenu.classList.add('open'); overlay.classList.add('open'); document.body.classList.add('menu-open'); }
+  function closeMenu() { sideMenu.classList.remove('open'); overlay.classList.remove('open'); document.body.classList.remove('menu-open'); }
+  burger.addEventListener('click', openMenu);
+  sideClose.addEventListener('click', closeMenu);
+  overlay.addEventListener('click', closeMenu);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+  // ===== СКРЫВАЮЩАЯСЯ ШАПКА ПРИ СКРОЛЛЕ =====
+  const header = document.getElementById('header');
+  let lastScrollY = window.scrollY;
+
+  window.addEventListener('scroll', () => {
+    const currentScrollY = window.scrollY;
+    
+    if (currentScrollY > 50) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+
+    // Прячем шапку при скролле вниз, показываем при скролле вверх
+    if (currentScrollY > lastScrollY && currentScrollY > 100) {
+      header.classList.add('hide');
+    } else {
+      header.classList.remove('hide');
+    }
+    
+    lastScrollY = currentScrollY;
+  }, { passive: true });
+
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const cards = document.querySelectorAll('.card');
+  function applyFilter(filter) {
+    cards.forEach(card => {
+      if (card.dataset.category === filter) { card.style.display = 'flex'; card.style.opacity = '1'; }
+      else { card.style.display = 'none'; }
+    });
+  }
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilter(btn.dataset.filter);
+    });
+  });
+  applyFilter('electric');
+
+  const rateBtns = document.querySelectorAll('.rate-toggle button');
+  let currentRate = 'hour';
+  
+  function updatePrices() {
+    document.querySelectorAll('.price[data-hour]').forEach(el => {
+      const hour = +el.dataset.hour;
+      const day = +el.dataset.day;
+      el.style.transform = 'scale(0.9)';
+      el.style.opacity = '0.4';
+      setTimeout(() => {
+        if (currentRate === 'hour') { el.innerHTML = hour + ' ₽<small>/ час</small>'; }
+        else {
+          el.innerHTML = day + ' ₽<small>/ сутки</small>';
+        }
+        el.style.transform = 'scale(1)';
+        el.style.opacity = '1';
+      }, 200);
+    });
+
+    const badges = document.querySelectorAll('.card-discount-badge');
+    if (currentRate === 'day') {
+      badges.forEach(b => b.classList.add('visible'));
+    } else {
+      badges.forEach(b => b.classList.remove('visible'));
+    }
+  }
+  
+  rateBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      rateBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentRate = btn.dataset.rate;
+      updatePrices();
+    });
+  });
+
+  // ===== МОДАЛЬНОЕ ОКНО И КАЛЬКУЛЯТОР =====
+  const overlayM = document.getElementById('modalOverlay');
+  const modalImg = document.getElementById('modalImg');
+  const modalTag = document.getElementById('modalTag');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalDesc = document.getElementById('modalDesc');
+  const modalSpecs = document.getElementById('modalSpecs');
+  const modalKit = document.getElementById('modalKit');
+  const modalTerms = document.getElementById('modalTerms');
+  const modalPrice = document.getElementById('modalPrice');
+  const modalPriceUnit = document.getElementById('modalPriceUnit');
+  const modalPriceOld = document.getElementById('modalPriceOld');
+  const modalRentBtn = document.getElementById('modalRentBtn');
+  const calcTerm = document.getElementById('calcTerm');
+  const calcTotal = document.getElementById('calcTotal');
+
+  let activeHour = 0;
+  let activeDay = 0;
+
+  function fillList(el, items) {
+    el.innerHTML = '';
+    items.forEach((item, i) => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      el.appendChild(li);
+    });
+  }
+
+  function calculateTotal() {
+    const term = calcTerm.value;
+    let total = 0;
+    
+    if (term === 'hour') total = activeHour;
+    else if (term === 'day') total = activeDay;
+    else if (term === 'week') total = Math.round(activeDay * 7 * 0.85); // скидка 15%
+    else if (term === 'month') total = Math.round(activeDay * 30 * 0.85); // скидка 15%
+    
+    calcTotal.textContent = total.toLocaleString('ru-RU') + ' ₽';
+  }
+
+  function openModal(card) {
+    const tool = card.dataset.tool;
+    modalImg.src = card.dataset.img;
+    modalTag.textContent = card.dataset.tag;
+    modalTitle.textContent = tool;
+    modalDesc.textContent = card.dataset.desc;
+    modalRentBtn.dataset.tool = tool;
+    
+    activeHour = +card.dataset.hour;
+    activeDay = +card.dataset.day;
+    
+    calcTerm.value = 'hour';
+    calculateTotal();
+
+    modalSpecs.innerHTML = '';
+    try {
+      const specs = JSON.parse(card.dataset.specs);
+      Object.entries(specs).forEach(([k, v]) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + k + '</td><td>' + v + '</td>';
+        modalSpecs.appendChild(tr);
+      });
+    } catch(e) {}
+    try { fillList(modalKit, JSON.parse(card.dataset.kit)); } catch(e) {}
+    try { fillList(modalTerms, JSON.parse(card.dataset.terms)); } catch(e) {}
+    
+    overlayM.classList.add('open');
+    document.body.classList.add('menu-open');
+  }
+
+  calcTerm.addEventListener('change', calculateTotal);
+
+  function closeModal() { overlayM.classList.remove('open'); document.body.classList.remove('menu-open'); }
+
+  cards.forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.rent-btn')) return;
+      openModal(card);
+    });
+  });
+
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  overlayM.addEventListener('click', (e) => { if (e.target === overlayM) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  const toolInput = document.getElementById('tool');
+  document.querySelectorAll('.rent-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toolInput.value = btn.dataset.tool;
+      closeModal();
+      const target = document.getElementById('order');
+      const targetY = target.getBoundingClientRect().top + window.pageYOffset - 60;
+      smoothScrollTo(targetY, 900);
+      setTimeout(() => document.getElementById('name').focus(), 1000);
+    });
+  });
+  
+  modalRentBtn.addEventListener('click', () => {
+    toolInput.value = modalRentBtn.dataset.tool;
+    closeModal();
+    const target = document.getElementById('order');
+    const targetY = target.getBoundingClientRect().top + window.pageYOffset - 60;
+    smoothScrollTo(targetY, 900);
+    setTimeout(() => document.getElementById('name').focus(), 1000);
+  });
+
+  // Обработка формы (закомментировано, если используете Formspree)
+  const toast = document.getElementById('toast');
+  document.getElementById('orderForm').addEventListener('submit', e => {
+    // Если вы настроили Formspree, закомментируйте код ниже, чтобы форма отправилась на сервер:
+    /*
+    e.preventDefault();
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 4000);
+    e.target.reset();
+    */
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  updatePrices();
+
+  // СЛАЙДЕР СЛОГАНОВ
+  const slogans = document.querySelectorAll('.slogan-text');
+  let currentSlogan = 0;
+  setInterval(() => {
+    const prev = slogans[currentSlogan];
+    prev.classList.remove('active');
+    prev.classList.add('prev');
+    setTimeout(() => prev.classList.remove('prev'), 500);
+    currentSlogan = (currentSlogan + 1) % slogans.length;
+    slogans[currentSlogan].classList.add('active');
+  }, 3500);
+</script>
+
+</body>
+</html>
